@@ -1,0 +1,59 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.yuankong'
+version = '1.0'
+status = System.currentTimeMillis()
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven {
+        name = 'Lumine Releases'
+        url = 'https://mvn.lumine.io/repository/maven-public/'
+    }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
+    compileOnly files('lib/EasyLib-1.3.jar')
+    compileOnly files('lib/SX-Attribute.jar')
+    compileOnly files('lib/【经济】HamsterCurrency.jar')
+    compileOnly files('lib/【经济】SaneEconomyCore-0.13.1.jar')
+    compileOnly files('lib/【伤害排行榜奖励】DamageRank.jar')
+    compileOnly 'io.lumine.xikage:MythicMobs:4.11.0'
+    compileOnly files('lib/DungeonPlus[独立副本].jar')
+}
+
+def targetJavaVersion = 8
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+processResources {
+    def props = [version: version,status: status]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}

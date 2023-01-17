@@ -1,0 +1,16 @@
+name: RankTop
+version: '${version}'
+versionCode: '${status}'
+main: com.yuankong.ranktop.RankTop
+authors: [ yuankong ]
+website: https://github.com/yuankong-al
+softdepend:
+- HamsterCurrency
+- SaneEconomy
+- DungeonPlus
+depend:
+- EasyLib
+- SX-Attribute
+- MythicMobs
+commands:
+  rtop:

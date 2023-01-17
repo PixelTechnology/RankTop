@@ -1,0 +1,36 @@
+#/rtop reload -重载
+#/rtop makerank <player> -计算副本通关时间，给副本boss绑定的指令,仅可在副本中使用
+战斗力排行榜:
+  enable: true
+  updateRate: 1800  #刷新速度 /秒
+  count: 10  #改变数量重载后会修改数据库的条数，请慎重
+#%ranktop_fight_player_n%
+#%ranktop_fight_value_n%
+
+金币排行榜:
+  enable: true
+  updateRate: 1800  #刷新速度 /秒
+  count: 10
+  usePlugin: "HamsterCurrency" #SaneEconomy为单端经济插件，所以如果使用这个，数据库金币表也不会有数据;重载后将在下一次刷新生效
+#%ranktop_money_player_n%
+#%ranktop_money_value_n%
+
+伤害排行榜:
+  enable: true
+  count: 10
+  mob:  #改变内容重载后会修改数据库的条数，请慎重
+  - '泰坦'
+  - '蓝银王'
+#%ranktop_damage_xxx_player_n%
+#%ranktop_damage_xxx_value_n%
+#%ranktop_damage_xxx_date_n%
+
+副本记录排行榜: #需要给副本内boss绑定指令
+  enable: true
+  count: 10
+  dungeon:
+  - 'xxx'
+#%ranktop_dungeon_xxx_player_n%
+#%ranktop_dungeon_xxx_value_n%
+#%ranktop_dungeon_xxx_date_n%
+#%ranktop_dungeon_xxx_number_n%
