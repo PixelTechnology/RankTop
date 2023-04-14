@@ -1,5 +1,6 @@
 package com.yuankong.ranktop.init;
 
+import com.google.common.base.Charsets;
 import com.yuankong.ranktop.RankTop;
 import com.yuankong.ranktop.config.LoadConfig;
 import com.yuankong.ranktop.data.Data;
@@ -81,39 +82,14 @@ public class Init {
     }
 
     public static void banTop(CommandSender sender,String playerName){
-        OfflinePlayer offlinePlayer = getPlayer(sender,playerName);
-        if(offlinePlayer == null){
-            return;
-        }
-        /*DataBase.sqlManager.createQuery().inTable(LoadConfig.getBanTable())
-                .selectColumns(DataBase.uuid)
-                .build().executeAsync((success) -> {
-                    ResultSet resultSet = success.getResultSet();
-                    boolean flag = false;
-                    while (resultSet.next()){
-                        if(UUID.fromString(resultSet.getString(DataBase.uuid)).equals(offlinePlayer.getUniqueId())){
-                            flag = true;
-                        }
-                    }
-                    if (flag){
-                        sender.sendMessage("§4该玩家已禁止排行榜上榜");
-                    }else{
-
-                    }
-                },(exception, sqlAction) -> {
-                    //操作失败回调
-                    RankTop.instance.getLogger().warning("查询ban表数据时出错");
-                    RankTop.instance.getLogger().warning(exception.getMessage());
-                });*/
-        sender.sendMessage("测试信息1");
-        if(banList.contains(offlinePlayer.getUniqueId())){
+        UUID uuid = getUUID(playerName);
+        if(banList.contains(uuid)){
             sender.sendMessage("§4该玩家已禁止排行榜上榜");
             return;
         }
-        sender.sendMessage("测试信息2");
         DataBase.sqlManager.createInsert(LoadConfig.getBanTable())
                 .setColumnNames(DataBase.uuid,DataBase.player_name)
-                .setParams(offlinePlayer.getUniqueId(),playerName)
+                .setParams(uuid,playerName)
                 .executeAsync((success1) -> {
                     sender.sendMessage("§a禁止该玩家排行榜上榜完成");
                     Init.updateBanList();
@@ -126,38 +102,13 @@ public class Init {
     }
 
     public static void unbanTop(CommandSender sender,String playerName){
-        OfflinePlayer offlinePlayer = getPlayer(sender,playerName);
-        if(offlinePlayer == null){
-            return;
-        }
-        sender.sendMessage("测试信息1");
-        /*DataBase.sqlManager.createQuery().inTable(LoadConfig.getBanTable())
-                .selectColumns(DataBase.uuid)
-                .build().executeAsync((success) -> {
-                    ResultSet resultSet = success.getResultSet();
-                    boolean flag = false;
-                    while (resultSet.next()){
-                        if(UUID.fromString(resultSet.getString(DataBase.uuid)).equals(offlinePlayer.getUniqueId())){
-                            flag = true;
-                        }
-                    }
-                    if (flag){
-
-                    }else{
-                        sender.sendMessage("§4该玩家未禁止排行榜上榜");
-                    }
-                },(exception, sqlAction) -> {
-                    //操作失败回调
-                    RankTop.instance.getLogger().warning("查询ban表数据时出错");
-                    RankTop.instance.getLogger().warning(exception.getMessage());
-                });*/
-        if(!banList.contains(offlinePlayer.getUniqueId())){
+        UUID uuid = getUUID(playerName);
+        if(!banList.contains(uuid)){
             sender.sendMessage("§4该玩家未禁止排行榜上榜");
             return;
         }
-        sender.sendMessage("测试信息2");
         DataBase.sqlManager.createDelete(LoadConfig.getBanTable())
-                .addCondition(DataBase.uuid,offlinePlayer.getUniqueId())
+                .addCondition(DataBase.uuid,uuid)
                 .build().executeAsync((success1) -> {
                     sender.sendMessage("§a解除禁止该玩家排行榜刷新完成");
                     Init.updateBanList();
@@ -170,25 +121,22 @@ public class Init {
     }
 
     public static void clearTopData(CommandSender sender,String playerName){
-        OfflinePlayer offlinePlayer = getPlayer(sender,playerName);
-        if(offlinePlayer == null){
-            return;
-        }
+        UUID uuid = getUUID(playerName);
         DataBase.sqlManager.createDelete(LoadConfig.getF_tableName())
-                .addCondition(DataBase.uuid,offlinePlayer.getUniqueId())
+                .addCondition(DataBase.uuid,uuid)
                 .build().executeAsync((success) -> {
                     DataBase.sqlManager.createDelete(LoadConfig.getH_tableName())
-                            .addCondition(DataBase.uuid,offlinePlayer.getUniqueId())
+                            .addCondition(DataBase.uuid,uuid)
                             .build().executeAsync((success1) -> {
                                 DataBase.sqlManager.createDelete(LoadConfig.getD_tableName())
-                                        .addCondition(DataBase.uuid,offlinePlayer.getUniqueId())
+                                        .addCondition(DataBase.uuid,uuid)
                                         .build().executeAsync((success2) -> {
                                             if(!Data.saneEconomyRank.isEmpty()){
-                                                Data.saneEconomyRank.remove(offlinePlayer.getUniqueId());
+                                                Data.saneEconomyRank.remove(uuid);
                                             }else{
                                                 AtomicReference<MoneyData> data = new AtomicReference<>();
                                                 Data.hamsterCurrencyRank.forEach((moneyData -> {
-                                                    if (moneyData.getUuid().equals(offlinePlayer.getUniqueId())){
+                                                    if (moneyData.getUuid().equals(uuid)){
                                                         data.set(moneyData);
                                                     }
                                                 }));
@@ -217,6 +165,7 @@ public class Init {
                 });
     }
 
+    //这个方法会卡，弃用
     public static OfflinePlayer getPlayer(CommandSender sender,String playerName){
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
         if(offlinePlayer == null){
@@ -228,6 +177,10 @@ public class Init {
             return null;
         }
         return offlinePlayer;
+    }
+
+    public static UUID getUUID(String playerName){
+        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(Charsets.UTF_8));
     }
 
     public static List<UUID> banList = new ArrayList<>();

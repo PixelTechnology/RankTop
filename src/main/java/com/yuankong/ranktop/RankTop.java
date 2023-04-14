@@ -121,7 +121,6 @@ public final class RankTop extends JavaPlugin {
         }
 
         if (args.length == 2 && "ban".equalsIgnoreCase(args[0])) {
-            sender.sendMessage("测试信息0");
             Bukkit.getScheduler().runTaskAsynchronously(RankTop.instance,()->{
                 Init.banTop(sender,args[1]);
             });
@@ -129,7 +128,6 @@ public final class RankTop extends JavaPlugin {
         }
 
         if (args.length == 2 && "unban".equalsIgnoreCase(args[0])) {
-            sender.sendMessage("测试信息0");
             Bukkit.getScheduler().runTaskAsynchronously(RankTop.instance,()->{
                 Init.unbanTop(sender,args[1]);
             });

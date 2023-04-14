@@ -33,7 +33,7 @@ public class EventHandler3 implements Listener {
 
     public static HashMap<String,BigDecimal> maxTime = new HashMap<>();
     public static void makeRank(CommandSender sender, String playerName){
-        Player player = Bukkit.getOfflinePlayer(playerName).getPlayer();
+        Player player = Bukkit.getPlayer(playerName);
         Team team = DungeonPlus.teamManager.getTeam(player);
         if(team == null || team.getTeamDungeon() == null){
             sender.sendMessage("§4该指令只能在副本使用");
