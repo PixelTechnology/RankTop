@@ -24,10 +24,20 @@ public class FightTimer extends TimerHandler {
         }
     }
 
-    private void updateFightRank(){
+    public static void updateFightRank(){
         Data.fightSet.clear();
         for(Player player:Bukkit.getServer().getOnlinePlayers()){
             if(!player.isOnline()){
+                continue;
+            }
+            /*List<UUID> list;
+            try {
+                list = Init.getBanList();
+            } catch (SQLException e) {
+                RankTop.instance.getLogger().warning(e.getMessage());
+                list = new ArrayList<>();
+            }*/
+            if (Init.banList.contains(player.getUniqueId())){
                 continue;
             }
             BigDecimal bigDecimal = new BigDecimal(Init.getFightValues(player));

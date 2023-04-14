@@ -27,6 +27,8 @@ public class LoadConfig {
     private static String d_tableName;
     private static List<String> dungeonList;
 
+    private static String banTable;
+
     public static void load() {
         Configuration config = RankTop.instance.getConfig();
         fightTopEnable = config.getBoolean("战斗力排行榜.enable");
@@ -50,7 +52,7 @@ public class LoadConfig {
         m_tableName = config.getString("金币排行榜.tableName","rank_money_top");
         h_tableName = config.getString("伤害排行榜.tableName","rank_hurt_top");
         d_tableName = config.getString("副本记录排行榜.tableName","rank_dungeon_top");
-
+        banTable = config.getString("banTable","rank_ban_top");
     }
 
     public static void reload() {
@@ -124,5 +126,9 @@ public class LoadConfig {
 
     public static List<String> getDungeonList() {
         return dungeonList;
+    }
+
+    public static String getBanTable() {
+        return banTable;
     }
 }

@@ -7,6 +7,7 @@ import com.yuankong.easylib.event.SQLManagerFinishEvent;
 import com.yuankong.ranktop.RankTop;
 import com.yuankong.ranktop.data.DataBase;
 import com.yuankong.ranktop.init.FightTimer;
+import com.yuankong.ranktop.init.Init;
 import com.yuankong.ranktop.init.MoneyTimer;
 import com.yuankong.ranktop.init.PAPIUtil;
 import com.yuankong.ranktop.util.Channel;
@@ -32,6 +33,7 @@ public class EventHandler2 implements Listener {
         DataBase.updateDamageRank();
         DataBase.updateDungeonRank();
         RankTop.instance.getLogger().info("初始化完成!");
+        Init.updateBanList();
     }
 
     @org.bukkit.event.EventHandler
@@ -57,6 +59,8 @@ public class EventHandler2 implements Listener {
         List<String> list = new ArrayList<>();
         list.add(Channel.DAMAGE.getChannel());
         list.add(Channel.DUNGEON.getChannel());
+        list.add(Channel.UPDATE.getChannel());
+        list.add(Channel.BAN.getChannel());
         EasyLibApi.registerBCChannel(RankTop.instance,list);
     }
 
@@ -67,6 +71,15 @@ public class EventHandler2 implements Listener {
             }
             if(s.equals(Channel.DUNGEON.getChannel())){
                 DataBase.updateDungeonRank();
+            }
+            if(s.equals(Channel.UPDATE.getChannel())){
+                DataBase.updateFightRank();
+                DataBase.updateDungeonRank();
+                DataBase.updateDamageRank();
+                MoneyTimer.updateMoneyRank();
+            }
+            if(s.equals(Channel.BAN.getChannel())){
+                Init.updateBanList();
             }
         });
     }

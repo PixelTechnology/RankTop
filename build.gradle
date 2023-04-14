@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.yuankong'
-version = '1.0'
+version = '1.1'
 status = System.currentTimeMillis()
 
 repositories {

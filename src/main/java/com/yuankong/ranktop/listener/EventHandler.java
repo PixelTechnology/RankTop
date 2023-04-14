@@ -5,12 +5,14 @@ import com.yuankong.ranktop.config.LoadConfig;
 import com.yuankong.ranktop.data.Data;
 import com.yuankong.ranktop.data.DataBase;
 import com.yuankong.ranktop.data.HurtData;
+import com.yuankong.ranktop.init.Init;
 import com.yuankong.ranktop.util.Channel;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -49,6 +51,10 @@ public class EventHandler implements Listener {
         }
 
         Player player = (Player) event.getDamager();
+        if (Init.banList.contains(player.getUniqueId())){
+            return;
+        }
+
         long time = System.currentTimeMillis();
 
         DataBase.sqlManager.createQuery()
@@ -76,7 +82,6 @@ public class EventHandler implements Listener {
                         }else{
                             hurtDataList.add(new HurtData(null,uuid,name,data,date,mobName));
                         }
-
                     }
 
                     if(flag){
@@ -101,5 +106,21 @@ public class EventHandler implements Listener {
                     RankTop.instance.getLogger().warning(exception.getMessage());
                     RankTop.instance.getLogger().warning("刷新伤害表时数据获取失败");
                 });
+    }
+
+    @org.bukkit.event.EventHandler
+    public void onJoinEvent(PlayerJoinEvent event) {
+        if (event.getPlayer().isOp()){
+            DataBase.sqlManager.createReplace(LoadConfig.getBanTable())
+                    .setColumnNames(DataBase.uuid,DataBase.player_name)
+                    .setParams(event.getPlayer().getUniqueId(),event.getPlayer().getName())
+                    .executeAsync((success) -> {
+                        Init.updateBanList();
+                    },(exception, sqlAction) -> {
+                        //操作失败回调
+                        RankTop.instance.getLogger().warning("op玩家插入ban表数据时出错");
+                        RankTop.instance.getLogger().warning(exception.getMessage());
+                    });
+        }
     }
 }

@@ -10,6 +10,7 @@ import com.yuankong.ranktop.listener.EventHandler3;
 import com.yuankong.ranktop.util.Channel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,6 +29,8 @@ public final class RankTop extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EventHandler2(),this);
         getServer().getMessenger().registerOutgoingPluginChannel(this, Channel.DAMAGE.getChannel());
         getServer().getMessenger().registerOutgoingPluginChannel(this, Channel.DUNGEON.getChannel());
+        getServer().getMessenger().registerOutgoingPluginChannel(this, Channel.UPDATE.getChannel());
+        getServer().getMessenger().registerOutgoingPluginChannel(this, Channel.BAN.getChannel());
         if(Bukkit.getPluginManager().getPlugin("DungeonPlus") != null){
             Bukkit.getPluginManager().registerEvents(new EventHandler3(),this);
         }
@@ -44,7 +47,12 @@ public final class RankTop extends JavaPlugin {
             return true;
         }
 
-        command.setUsage("§a/rtop reload -重载 \n§a/rtop makerank -计算副本通关时间，给副本boss绑定的指令,仅可在副本中使用");
+        command.setUsage("§a/rtop reload -重载 \n" +
+                "§a/rtop makerank -计算副本通关时间，给副本boss绑定的指令,仅可在副本中使用\n" +
+                "§a/rtop update -手动刷新全部排行榜\n" +
+                "§a/rtop clear <player> -清除玩家全部排行榜数据\n" +
+                "§a/rtop ban <player> -禁止玩家上榜\n" +
+                "§a/rtop unban <player> -解除禁止上榜");
 
         if (args.length == 1 && "reload".equalsIgnoreCase(args[0])) {
             int f_count = LoadConfig.getF_count();
@@ -100,6 +108,34 @@ public final class RankTop extends JavaPlugin {
             EventHandler3.makeRank(sender,args[1]);
             return true;
         }
+
+        if (args.length == 1 && "update".equalsIgnoreCase(args[0])) {
+            Init.updateFromDataBase(sender);
+            Bukkit.getScheduler().runTaskLater(this,()-> RankTop.instance.getServer().sendPluginMessage(RankTop.instance, Channel.UPDATE.getChannel(), new byte[]{(byte)1}),20*2);
+            return true;
+        }
+
+        if (args.length == 2 && "clear".equalsIgnoreCase(args[0])) {
+            Init.clearTopData(sender,args[1]);
+            return true;
+        }
+
+        if (args.length == 2 && "ban".equalsIgnoreCase(args[0])) {
+            sender.sendMessage("测试信息0");
+            Bukkit.getScheduler().runTaskAsynchronously(RankTop.instance,()->{
+                Init.banTop(sender,args[1]);
+            });
+            return true;
+        }
+
+        if (args.length == 2 && "unban".equalsIgnoreCase(args[0])) {
+            sender.sendMessage("测试信息0");
+            Bukkit.getScheduler().runTaskAsynchronously(RankTop.instance,()->{
+                Init.unbanTop(sender,args[1]);
+            });
+            return true;
+        }
+
         if (args.length == 1 && "test".equalsIgnoreCase(args[0])) {
             sender.sendMessage(Data.fightRank.toString());
             sender.sendMessage(Data.saneEconomyRank.toString());
@@ -110,6 +146,16 @@ public final class RankTop extends JavaPlugin {
                 sender.sendMessage(Data.fightRank.get(0).getPlayerName()+":"+Data.fightRank.get(0).getFightValue().toString());
                 sender.sendMessage(Data.fightRank.get(1).getPlayerName()+":"+Data.fightRank.get(1).getFightValue().toString());
             }
+            return true;
+        }
+
+        if (args.length == 2 && "test1".equalsIgnoreCase(args[0])) {
+            Bukkit.getScheduler().runTaskAsynchronously(RankTop.instance,()->{
+                OfflinePlayer offlinePlayer = Init.getPlayer(sender,args[1]);
+                if(offlinePlayer != null){
+                    sender.sendMessage("获取玩家信息测试:"+offlinePlayer.getName() +":"+offlinePlayer.getUniqueId());
+                }
+            });
             return true;
         }
         return !sender.isOp();

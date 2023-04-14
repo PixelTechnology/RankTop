@@ -89,6 +89,18 @@ public class DataBase {
                     RankTop.instance.getLogger().warning(exception.getMessage());
                     RankTop.instance.getLogger().warning("副本表加载失败，可能数据库连接失败!");
                 });
+
+        sqlManager.createTable(LoadConfig.getBanTable())
+                .addColumn(uuid, "VARCHAR(40) NOT NULL UNIQUE KEY")
+                .addColumn(player_name, "VARCHAR(20) NOT NULL")
+                .build().executeAsync((success) -> {
+                    //操作成功回调
+                    RankTop.instance.getLogger().info("ban表加载成功!");
+                }, (exception, sqlAction) -> {
+                    //操作失败回调
+                    RankTop.instance.getLogger().warning("ban表加载失败，可能数据库连接失败!");
+                    RankTop.instance.getLogger().warning(exception.getMessage());
+                });
     }
 
 
@@ -155,8 +167,8 @@ public class DataBase {
                     }
                     ResultSet resultSet = success.getResultSet();
                     while (resultSet.next()) {
-                        UUID uuid = UUID.fromString(resultSet.getString(DataBase.uuid));
                         String name = resultSet.getString(DataBase.player_name);
+                        UUID uuid = UUID.fromString(resultSet.getString(DataBase.uuid));
                         BigDecimal data = new BigDecimal(resultSet.getString(DataBase.data));
                         long date = Long.parseLong(resultSet.getString(DataBase.date));
                         int number = resultSet.getInt(DataBase.number);

@@ -5,6 +5,7 @@ import com.yuankong.ranktop.config.LoadConfig;
 import com.yuankong.ranktop.data.Data;
 import com.yuankong.ranktop.data.DataBase;
 import com.yuankong.ranktop.data.DungeonData;
+import com.yuankong.ranktop.init.Init;
 import com.yuankong.ranktop.util.Channel;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -39,6 +40,9 @@ public class EventHandler3 implements Listener {
             return;
         }
         Player leader = Bukkit.getOfflinePlayer(team.leader).getPlayer();
+        if (Init.banList.contains(leader.getUniqueId())){
+            return;
+        }
         BigDecimal time = BigDecimal.valueOf(System.currentTimeMillis());
         if(EventHandler3.enterTime.containsKey(leader)){
             time = (time.subtract(EventHandler3.enterTime.get(leader))).divide(BigDecimal.valueOf(1000),0, RoundingMode.UP);

@@ -10,8 +10,10 @@ import com.yuankong.ranktop.data.MoneyData;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class HamsterCurrencyUtil {
     public static List<MoneyData> moneyDataList = new ArrayList<>();
@@ -23,12 +25,20 @@ public class HamsterCurrencyUtil {
                 .selectColumns(DataBase.data)
                 .build().executeAsync((success) -> {
                     ResultSet resultSet = success.getResultSet();
+                    /*List<UUID> list;
+                    try {
+                        list = Init.getBanList();
+                    } catch (SQLException e) {
+                        RankTop.instance.getLogger().warning(e.getMessage());
+                        list = new ArrayList<>();
+                    }*/
                     while (resultSet.next()){
                         PlayerData playerData = new PlayerData(parser.parse(resultSet.getString(DataBase.data)).getAsJsonObject());
-                        moneyDataList.add(new MoneyData(null,playerData.getUuid(),playerData.getPlayerName(), BigDecimal.valueOf(playerData.getPlayerCurrency("金币"))));
-
-                        makeTop();
+                        if (!Init.banList.contains(playerData.getUuid())){
+                            moneyDataList.add(new MoneyData(null,playerData.getUuid(),playerData.getPlayerName(), BigDecimal.valueOf(playerData.getPlayerCurrency("金币"))));
+                        }
                     }
+                    makeTop();
                 }, (exception, sqlAction) -> {
                     //操作失败回调
                     RankTop.instance.getLogger().warning("hamster_currency_player_data表数据获取失败!");

@@ -117,7 +117,7 @@ public class PAPIUtil {
                     if(!Data.dungeonRank.containsKey(dungeon) || Data.dungeonRank.get(dungeon).isEmpty() || Data.dungeonRank.get(dungeon).size() < x){
                         return " ";
                     }
-                    return Data.dungeonRank.get(dungeon).get(x-1).getTime().toString();
+                    return Data.dungeonRank.get(dungeon).get(x-1).getTime().toString() + "秒";
                 });
 
                 //ranktop_dungeon_xxx_date_n

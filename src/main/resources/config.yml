@@ -1,5 +1,9 @@
 #/rtop reload -重载
 #/rtop makerank <player> -计算副本通关时间，给副本boss绑定的指令,仅可在副本中使用
+#/rtop update -手动刷新全部排行榜
+#/rtop clear <player> -清除玩家全部排行榜数据
+#/rtop ban <player> -禁止玩家上榜(如玩家已有数据，则不会删除排行榜数据)
+#/rtop unban <player> -解除禁止上榜
 战斗力排行榜:
   enable: true
   updateRate: 1800  #刷新速度 /秒

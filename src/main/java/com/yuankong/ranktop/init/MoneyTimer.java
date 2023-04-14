@@ -18,7 +18,7 @@ public class MoneyTimer extends TimerHandler {
         }
     }
 
-    private void updateMoneyRank(){
+    public static void updateMoneyRank(){
         if(Bukkit.getPluginManager().getPlugin(LoadConfig.getUsePlugin()) == null || !Bukkit.getPluginManager().getPlugin(LoadConfig.getUsePlugin()).isEnabled()) {
             RankTop.instance.getLogger().warning("未找到"+LoadConfig.getUsePlugin()+"插件!请检查!");
             return;
@@ -30,7 +30,16 @@ public class MoneyTimer extends TimerHandler {
                 Data.saneEconomyRank.clear();
                 map.forEach(((uuid, money) -> {
                     if(Data.saneEconomyRank.size() < LoadConfig.getM_count()){
-                        Data.saneEconomyRank.put(uuid,money);
+                        /*List<UUID> list;
+                        try {
+                            list = Init.getBanList();
+                        } catch (SQLException e) {
+                            RankTop.instance.getLogger().warning(e.getMessage());
+                            list = new ArrayList<>();
+                        }*/
+                        if (!Init.banList.contains(uuid)){
+                            Data.saneEconomyRank.put(uuid,money);
+                        }
                     }
                 }));
             }
